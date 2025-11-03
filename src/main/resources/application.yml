@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ms-category
+  datasource:
+    url: jdbc:postgresql://localhost:5432/category
+    username: peyman
+    password: password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: liquibase/changelog-master.yaml
+server:
+
+  port: 8083
