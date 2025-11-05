@@ -9,34 +9,17 @@ databaseChangeLog:
               - column:
                   name: id
                   type: BIGSERIAL
-                  autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
-
-              - column:
-                  name: name
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-
               - column:
                   name: active
                   type: BOOLEAN
-                  defaultValueBoolean: true
-                  constraints:
-                    nullable: false
-
               - column:
                   name: parent_category_id
                   type: BIGINT
                   constraints:
+                    foreignKeyName: fk_categories_parent
+                    references: categories(id)
                     nullable: true
-
-        - addForeignKeyConstraint:
-            baseTableName: categories
-            baseColumnNames: parent_category_id
-            referencedTableName: categories
-            referencedColumnNames: id
-            constraintName: fk_categories_parent
-            onDelete: SET NULL
+                    onDelete: SET NULL

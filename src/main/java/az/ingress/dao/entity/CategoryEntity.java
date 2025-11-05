@@ -4,9 +4,16 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
+
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PRIVATE;
 
 @Getter
 @Setter
@@ -15,18 +22,20 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "categories")
-@FieldDefaults(level = AccessLevel.PRIVATE)
-
+@FieldDefaults(level = PRIVATE)
+@Where(clause = "active = true")
 public class CategoryEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     Long id;
-    String name;
+    @OneToMany(mappedBy = "category", cascade = {PERSIST, MERGE}, fetch = LAZY)
+    @JsonManagedReference
+    Set<CategoryTranslationEntity> translations;
     Boolean active;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JsonBackReference
     CategoryEntity parentCategory;
-    @OneToMany(mappedBy = "parentCategory", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "parentCategory", cascade = {PERSIST, MERGE}, fetch = LAZY)
     @JsonManagedReference
-    List<CategoryEntity> subCategories;
+    Set<CategoryEntity> subCategories;
 }

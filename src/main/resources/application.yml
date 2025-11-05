@@ -9,6 +9,15 @@ spring:
   liquibase:
     enabled: true
     change-log: liquibase/changelog-master.yaml
+  jpa:
+    open-in-view: false
+    show-sql: true
 server:
-
   port: 8083
+redis:
+  server:
+    url: redis://localhost:6379
+  cache:
+    keys:
+      category-prefix: 'ms-category:category-id:'
+      categories: 'ms-category:categories'
