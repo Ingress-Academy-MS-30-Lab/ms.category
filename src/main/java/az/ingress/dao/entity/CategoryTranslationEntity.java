@@ -1,10 +1,13 @@
 package az.ingress.dao.entity;
 
-import az.ingress.model.enums.Language;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+
+import java.time.LocalDateTime;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
@@ -22,11 +25,16 @@ public class CategoryTranslationEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     Long id;
-    @Enumerated(value = STRING)
-    Language language;
+    String language;
     String name;
+    String description;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     @JsonBackReference
     CategoryEntity category;
+
+    @CreationTimestamp
+    LocalDateTime createdAt;
+    @UpdateTimestamp
+    LocalDateTime updatedAt;
 }

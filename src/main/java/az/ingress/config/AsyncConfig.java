@@ -7,26 +7,27 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+import static az.ingress.model.constants.ApplicationConstants.*;
+
 @Configuration
-@EnableAsync
 public class AsyncConfig {
 
-    @Bean(name = "asyncExecutor")
+    @Bean(name = CUSTOM_THREAD_POOL)
     public Executor asyncExecutor() {
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        var availableProcessors = Runtime.getRuntime().availableProcessors();
 
-        int corePoolSize = Math.max(2, availableProcessors);
-        int maxPoolSize = corePoolSize * 2;
-        int queueCapacity = maxPoolSize * 50;
+        var corePoolSize = Math.max(2, availableProcessors);
+        var maxPoolSize = corePoolSize * 2;
+        var queueCapacity = maxPoolSize * 50;
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("CacheAsync-");
+        executor.setThreadNamePrefix(CACHE_NAME_PREFIX);
 
         executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAwaitTerminationSeconds(30);
+        executor.setAwaitTerminationSeconds(AWAIT_TERMINATION_SECOND);
         executor.initialize();
         return executor;
     }

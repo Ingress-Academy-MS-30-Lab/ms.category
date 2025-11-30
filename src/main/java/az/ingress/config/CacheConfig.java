@@ -16,7 +16,7 @@ public class CacheConfig {
     @Bean
     public RedissonClient redissonSingleClient() {
 
-        Config config = new Config();
+        var config = new Config();
 
         config.setCodec(new JsonJacksonCodec()).
                 useSingleServer().

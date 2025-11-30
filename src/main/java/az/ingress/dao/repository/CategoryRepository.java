@@ -1,13 +1,10 @@
 package az.ingress.dao.repository;
 
 import az.ingress.dao.entity.CategoryEntity;
-import az.ingress.model.enums.Language;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +30,7 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Long>
               AND (t3.language = :language OR t3.language IS NULL)
               AND (t4.language = :language OR t4.language IS NULL)
             """)
-    List<CategoryEntity> findAllRootCategories(Language language);
+    List<CategoryEntity> findAllRootCategories(String language);
 
     @Query("""
             SELECT DISTINCT c
@@ -54,7 +51,7 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Long>
               AND (t3.language = :language OR t3.language IS NULL)
               AND (t4.language = :language OR t4.language IS NULL)
             """)
-    Optional<CategoryEntity> findCategory(Language language, Long id);
+    Optional<CategoryEntity> findCategory(String language, Long id);
 
     @EntityGraph(attributePaths = {"translations"})
     Optional<CategoryEntity> findCategoryById(Long id);

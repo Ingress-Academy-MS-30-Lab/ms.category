@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.MERGE;
@@ -38,4 +41,8 @@ public class CategoryEntity {
     @OneToMany(mappedBy = "parentCategory", cascade = {PERSIST, MERGE}, fetch = LAZY)
     @JsonManagedReference
     Set<CategoryEntity> subCategories;
+    @CreationTimestamp
+    LocalDateTime createdAt;
+    @UpdateTimestamp
+    LocalDateTime updatedAt;
 }

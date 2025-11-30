@@ -5,7 +5,6 @@ import az.ingress.dao.repository.CategoryRepository;
 import az.ingress.exception.NotFoundException;
 import az.ingress.logger.ApplicationLogger;
 import az.ingress.model.dto.UpdateCategoryDto;
-import az.ingress.model.enums.Language;
 import az.ingress.model.request.CategoryRequest;
 import az.ingress.model.response.CategoryResponse;
 import az.ingress.service.abstraction.CategoryCacheService;
@@ -14,18 +13,18 @@ import az.ingress.util.CategoryTranslationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 
 import static az.ingress.exception.ErrorMessage.CATEGORY_NOT_FOUND;
 import static az.ingress.mapper.CategoryMapper.CATEGORY_MAPPER;
+import static az.ingress.util.LocalizationUtil.LOCALIZATION_UTIL;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceHandler implements CategoryService {
 
-    private static final ApplicationLogger log = ApplicationLogger.getLogger(CategoryServiceImpl.class);
+    private static final ApplicationLogger log = ApplicationLogger.getLogger(CategoryServiceHandler.class);
 
     private final CategoryRepository categoryRepository;
     private final CategoryTranslationUtil categoryTranslationUtil;
@@ -50,11 +49,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResponse> getCategories(Language language) {
+    public List<CategoryResponse> getCategories() {
+String language= LOCALIZATION_UTIL.getLanguage();
         log.info("Fetching all categories for language: {}", language);
 
         List<CategoryResponse> categories = categoryCacheService.getCategoriesFromCache();
-        if (categories != null && !categories.isEmpty()) {
+        if (categories != null) {
             log.debug("Categories fetched from cache, count: {}", categories.size());
             return categories;
         }
@@ -104,7 +104,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse getCategory(Language language, Long id) {
+    public CategoryResponse getCategory(Long id) {
+        String language = LOCALIZATION_UTIL.getLanguage();
         log.info("Fetching category by ID: {} for language: {}", id, language);
 
         CategoryResponse categoryFromCache = categoryCacheService.getCategoryFromCache(id);

@@ -1,17 +1,16 @@
 spring:
   application:
-    name: ms-category
+    name: ms.category
   datasource:
-    url: jdbc:postgresql://localhost:5432/category
-    username: peyman
-    password: password
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
   liquibase:
-    enabled: true
     change-log: liquibase/changelog-master.yaml
   jpa:
     open-in-view: false
-    show-sql: true
 server:
   port: 8083
 redis:
@@ -19,5 +18,5 @@ redis:
     url: redis://localhost:6379
   cache:
     keys:
-      category-prefix: 'ms-category:category-id:'
+      category-prefix: 'ms-category:category-id:%s'
       categories: 'ms-category:categories'

@@ -20,9 +20,8 @@ public enum CategoryMapper {
         return entity;
     }
 
-    private Set<CategoryTranslationEntity>
-    buildCategoryTranslationEntity(List<CategoryNameDto> categoryNames,
-                                   CategoryEntity categoryEntity) {
+    private Set<CategoryTranslationEntity> buildCategoryTranslationEntity(List<CategoryNameDto> categoryNames,
+                                                                          CategoryEntity categoryEntity) {
         return categoryNames.
                 stream().
                 map(i -> CategoryTranslationEntity.

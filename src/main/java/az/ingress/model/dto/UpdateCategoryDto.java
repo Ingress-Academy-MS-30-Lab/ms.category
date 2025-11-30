@@ -6,8 +6,10 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class UpdateCategoryDto {
     List<CategoryNameDto> names;
 }
