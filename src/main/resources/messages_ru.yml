@@ -1,0 +1,5 @@
+category:
+  name:
+    notblank: "Название категории не может быть пустым"
+  description:
+    notblank: "Описание не может быть пустым"

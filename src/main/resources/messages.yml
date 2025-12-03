@@ -1,0 +1,5 @@
+category:
+  name:
+    notblank: "Category name cannot be blank"
+  description:
+    notblank: "Description cannot be blank"

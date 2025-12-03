@@ -1,4 +1,7 @@
 spring:
+  messages:
+    basename: messages
+    encoding: UTF-8
   application:
     name: ms.category
   datasource:
@@ -20,3 +23,4 @@ redis:
     keys:
       category-prefix: 'ms-category:category-id:%s'
       categories: 'ms-category:categories'
+

@@ -2,20 +2,20 @@ package az.ingress.service.concrete;
 
 import az.ingress.config.model.RedisCacheKeysProperties;
 import az.ingress.logger.ApplicationLogger;
+import az.ingress.model.dto.CategoryCacheDto;
 import az.ingress.model.response.CategoryResponse;
 import az.ingress.service.abstraction.CategoryCacheService;
 import az.ingress.util.CacheUtil;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+import static az.ingress.mapper.CategoryCacheMapper.CATEGORY_CACHE_MAPPER;
 import static az.ingress.model.constants.ApplicationConstants.CATEGORY_CACHE_DAYS;
 import static az.ingress.model.constants.ApplicationConstants.CUSTOM_THREAD_POOL;
 
@@ -40,8 +40,9 @@ public class CategoryCacheServiceHandler implements CategoryCacheService {
                 category.getId(),
                 key
         );
+        var cacheCategory = CATEGORY_CACHE_MAPPER.toCache(category);
 
-        cacheUtil.saveToCache(key, category, CATEGORY_CACHE_DAYS);
+        cacheUtil.saveToCache(key, cacheCategory, CATEGORY_CACHE_DAYS);
 
         log.info("ActionLog.saveCategoryToCache.end id: {}", category.getId());
         log.info("ActionLog.saveCategoryToCache.end response: saved");
@@ -49,7 +50,7 @@ public class CategoryCacheServiceHandler implements CategoryCacheService {
 
 
     @Override
-    public CategoryResponse getCategoryFromCache(Long id) {
+    public Optional<CategoryCacheDto> getCategoryFromCache(Long id) {
         String key = String.format(redisCacheKeysProperties.getCategoryPrefix(), id);
         log.info("ActionLog.getCategoryFromCache.start key: {}", key);
         return cacheUtil.getBucket(key);
@@ -64,9 +65,10 @@ public class CategoryCacheServiceHandler implements CategoryCacheService {
                 redisCacheKeysProperties.getCategories()
         );
 
+        var cacheList = CATEGORY_CACHE_MAPPER.toCacheList(categories);
         cacheUtil.saveToCache(
                 redisCacheKeysProperties.getCategories(),
-                categories,
+                cacheList,
                 CATEGORY_CACHE_DAYS
         );
 
@@ -74,23 +76,18 @@ public class CategoryCacheServiceHandler implements CategoryCacheService {
     }
 
     @Override
-    public List<CategoryResponse> getCategoriesFromCache() {
+    public Optional<List<CategoryCacheDto>> getCategoriesFromCache() {
 
         String categoriesKey = redisCacheKeysProperties.getCategories();
+        log.info("ActionLog.getCategoriesFromCache.start key: {}", categoriesKey);
 
-        log.info("ActionLog.getCategoriesFromCache.start key: {}",
-                categoriesKey
-        );
+        Optional<List<CategoryCacheDto>> cachedCategories = cacheUtil.getBucket(categoriesKey);
 
-        List<CategoryResponse> cachedCategories = cacheUtil.getBucket(categoriesKey);
-
-        if (cachedCategories != null) {
-            log.info("ActionLog.getCategoriesFromCache.end size: {}",
-                    cachedCategories.size()
-            );
-            log.info("ActionLog.getCategoriesFromCache.end response: {}", cachedCategories);
+        if (cachedCategories.isPresent()) {
+            List<CategoryCacheDto> list = cachedCategories.get();
+            log.info("ActionLog.getCategoriesFromCache.end response: {}", list);
         } else {
-            log.info("ActionLog.getCategoriesFromCache.end response: null");
+            log.info("ActionLog.getCategoriesFromCache.end response: empty");
         }
 
         return cachedCategories;

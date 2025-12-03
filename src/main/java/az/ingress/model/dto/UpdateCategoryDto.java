@@ -1,6 +1,5 @@
 package az.ingress.model.dto;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 

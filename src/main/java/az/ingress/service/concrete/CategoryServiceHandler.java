@@ -50,30 +50,28 @@ public class CategoryServiceHandler implements CategoryService {
 
     @Override
     public List<CategoryResponse> getCategories() {
-String language= LOCALIZATION_UTIL.getLanguage();
-        log.info("Fetching all categories for language: {}", language);
 
-        List<CategoryResponse> categories = categoryCacheService.getCategoriesFromCache();
-        if (categories != null) {
-            log.debug("Categories fetched from cache, count: {}", categories.size());
-            return categories;
+        String language = LOCALIZATION_UTIL.getLanguage();
+        log.info("ActionLog.getCategories.start language: {}", language);
+        var cachedCategories = categoryCacheService.getCategoriesFromCache();
+        if (cachedCategories.isPresent()) {
+            var list = cachedCategories.get();
+            log.info("ActionLog.getCategories.start size: {}", list.size());
+            return CATEGORY_MAPPER.fromCacheList(list);
         }
 
-        log.debug("Cache empty. Fetching categories from DB...");
-        List<CategoryEntity> allRootCategories = categoryRepository.findAllRootCategories(language);
-        categories = CATEGORY_MAPPER.toResponse(allRootCategories);
-
-        categoryCacheService.saveCategoriesToCache(categories);
-        log.info("Categories cached successfully. Count: {}", categories.size());
-
-        return categories;
+        var allRootCategories = categoryRepository.findAllRootCategories(language);
+        var categoryResponses = CATEGORY_MAPPER.toResponse(allRootCategories);
+        categoryCacheService.saveCategoriesToCache(categoryResponses);
+        return categoryResponses;
     }
+
 
     @Override
     public void deleteCategory(Long id) {
         log.info("Deleting category with ID: {}", id);
 
-        CategoryEntity category = categoryRepository.findById(id)
+        var category = categoryRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Attempt to delete non-existent or inactive category with ID: {}", id);
                     return new NotFoundException(CATEGORY_NOT_FOUND);
@@ -90,7 +88,7 @@ String language= LOCALIZATION_UTIL.getLanguage();
     public void updateCategory(Long categoryId, UpdateCategoryDto dto) {
         log.info("Updating category with ID: {} and DTO: {}", categoryId, dto);
 
-        CategoryEntity category = categoryRepository.findCategoryById(categoryId)
+        var category = categoryRepository.findCategoryById(categoryId)
                 .orElseThrow(() -> {
                     log.warn("Category not found for update with ID: {}", categoryId);
                     return new NotFoundException(CATEGORY_NOT_FOUND);
@@ -108,23 +106,22 @@ String language= LOCALIZATION_UTIL.getLanguage();
         String language = LOCALIZATION_UTIL.getLanguage();
         log.info("Fetching category by ID: {} for language: {}", id, language);
 
-        CategoryResponse categoryFromCache = categoryCacheService.getCategoryFromCache(id);
-        if (categoryFromCache != null) {
-            log.debug("Category with ID: {} fetched from cache", id);
-            return categoryFromCache;
-        }
+        var cachedCategory = categoryCacheService.getCategoryFromCache(id);
 
-        log.debug("Cache miss. Fetching category from DB...");
-        CategoryEntity category = categoryRepository.findCategory(language, id)
+        if (cachedCategory.isPresent()) {
+            return CATEGORY_MAPPER.fromCache(cachedCategory.get());
+        }
+        var category = categoryRepository
+                .findCategory(language, id)
                 .orElseThrow(() -> {
                     log.warn("Category not found with ID: {}", id);
                     return new NotFoundException(CATEGORY_NOT_FOUND);
                 });
-
-        categoryFromCache = CATEGORY_MAPPER.mapToResponseRecursive(category);
-        categoryCacheService.saveCategoryToCache(categoryFromCache);
-
+        var response = CATEGORY_MAPPER.mapToResponseRecursive(category);
+        categoryCacheService.saveCategoryToCache(response);
         log.info("Category with ID: {} fetched from DB and cached", id);
-        return categoryFromCache;
+
+        return response;
     }
+
 }

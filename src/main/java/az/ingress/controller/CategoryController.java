@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -46,7 +47,7 @@ public class CategoryController {
 
     @PutMapping("{id}")
     @ResponseStatus(NO_CONTENT)
-    public void updateCategory(@PathVariable Long id, @RequestBody UpdateCategoryDto categoryDto) {
+    public void updateCategory(@PathVariable Long id,@Valid @RequestBody UpdateCategoryDto categoryDto) {
         categoryService.updateCategory(id, categoryDto);
     }
 

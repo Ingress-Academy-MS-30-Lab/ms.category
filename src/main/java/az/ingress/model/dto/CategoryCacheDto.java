@@ -1,22 +1,27 @@
 package az.ingress.model.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = PRIVATE)
-public class CategoryNameDto {
-    @NotBlank(message = "{category.name.notblank}")
+public class CategoryCacheDto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    Long id;
     String name;
-    String language;
-    @NotBlank(message = "{category.description.notblank}")
-    String description;
+    List<CategoryCacheDto> subCategories;
 }
