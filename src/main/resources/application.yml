@@ -1,0 +1,26 @@
+spring:
+  messages:
+    basename: messages
+    encoding: UTF-8
+  application:
+    name: ms.category
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    change-log: liquibase/changelog-master.yaml
+  jpa:
+    open-in-view: false
+server:
+  port: 8083
+redis:
+  server:
+    url: redis://localhost:6379
+  cache:
+    keys:
+      category-prefix: 'ms-category:category-id:%s'
+      categories: 'ms-category:categories'
+

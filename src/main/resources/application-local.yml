@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    show-sql: true
+  liquibase:
+    drop-first: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/category
+    username: peyman
+    password: password
+    driver-class-name: org.postgresql.Driver
